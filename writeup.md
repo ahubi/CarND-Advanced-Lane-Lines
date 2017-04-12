@@ -27,7 +27,19 @@ The goals / steps of this project are the following:
 ---
 ### Project location
 
-#### [Here](https://github.com/ahubi/CarND-Advanced-Lane-Lines/blob/master/alf.ipynb) is a link to my IPython notebook where you find the source code. In this [directory](https://github.com/ahubi/CarND-Advanced-Lane-Lines/tree/master/output_images) generated images used in this writeup are located.
+Here is a [link](https://github.com/ahubi/CarND-Advanced-Lane-Lines/blob/master/alf.ipynb) to my IPython notebook where you find the source code for the project. In this [directory](https://github.com/ahubi/CarND-Advanced-Lane-Lines/tree/master/output_images) generated images, used in this writeup, are located. Following table describes the content of output_images directory. As input test images from test_images directory were used.
+
+| Directory / File name       | Description   |
+|:-------------:|:-------------:|
+| binary_images     | Images after applied threshold and gradient pipeline|
+| chessboard_corners      | Images used during camera calibration, detected corners drawn on the image      |
+| transformed_images     | Images after being binarized and perspectively transformed.     |
+| undistorted     | Images after undistortion is applied |
+|left_fitx_right_fitx.jpg| Image after being binarized, applied perspective transform and fitted polynomial lines.|
+|test4_final_lane.jpg| Image showing final result lane with text information about left and right radius of the lines and final lane curvature. Distance of the left and right line from center of the car and car position relatively to center. Additionally left and right lines are project on the image.|
+|undistorted_cb.jpg| Image showing chessboard images before and after undistortion|
+|warped_undistorted.jpg|Image showing original test image with source points drawn in red and the same image after applying perspective transform with destination points drawn in red|
+
 
 ### Camera Calibration
 
