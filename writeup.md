@@ -19,6 +19,7 @@ The goals / steps of this project are the following:
 [image4]: ./output_images/warped_undistorted.jpg "Road original warped"
 [image5]: ./output_images/left_fitx_right_fitx.jpg "Fit Visual"
 [image6]: ./output_images/test4_final_lane.jpg "Output"
+[image7]: ./output_images/chessboard_corners/calibration12.jpg "Chessboard corners"
 [video1]: ./processed_project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
@@ -45,7 +46,17 @@ Here is a [link](https://github.com/ahubi/CarND-Advanced-Lane-Lines/blob/master/
 
 ####1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in the first and second code cell of the IPython notebook located in "./alf.ipynb" The function calibrate_camera() does the calibration. Chessboard images with 9x6 corners are used.  
+The code for this step is contained in the first (function implemented) and second (function executed) code cell of the IPython notebook located in "./alf.ipynb" The function calibrate_camera() does the calibration.
+
+```
+ret, mtx, dist, rvecs, tvecs = calibrate_camera()
+
+```
+Chessboard images with 9x6 corners are used. Here is one example a chessboard image used during calibration with the corners drawn on it:
+
+![alt text][image7]
+
+For proper calibration it is advised to have a minimum number of pictures, udacity teacher suggests 20. Different pictures (from different angles and positions) must me taken with the camera which is calibrated.
 
 I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.
 
@@ -55,11 +66,23 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 
 ### Pipeline (single images)
 
-####1. Provide an example of a distortion-corrected image.
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
+To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one undistorted image:
 ![alt text][image2]
-####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+
+#### Create thresholded binary image
+
+I used a combination of color and gradient thresholds to generate a binary image (the code for creating a thresholded binary image is located in the first code cell of my notebook, function pipeline()) Threshholding ranges are passed into function, following values are used:
+
+```
+def pipeline(img, s_thresh=(150, 255), sx_thresh=(20, 200),l_thresh=(50,255)):
+```
+To achieve better results the images is converted to HLS color space in the first step. After that individual channels L and S are separated. Sobel in x direction is applied to L channel to accentuate vertical lines (lane lines). Sobel result is scaled and thresholded. Additionally thresholding is applied to L and S channels separately. At the end all three results are combined to one images by 'AND' operation.
+
+```
+combined_binary[((l_binary == 1) & (s_binary == 1) | (sxbinary==1))] = 1
+```
+
+Here's an example of the the image shown above for this step.
 
 ![alt text][image3]
 
