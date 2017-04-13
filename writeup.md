@@ -42,7 +42,7 @@ Here is a [link](https://github.com/ahubi/CarND-Advanced-Lane-Lines/blob/master/
 |warped_undistorted.jpg|Image showing original test image with source points drawn in red and the same image after applying perspective transform with destination points drawn in red|
 
 
-### Camera Calibration and undistortion
+#### 1. Camera Calibration and undistortion
 
 ####1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
@@ -64,7 +64,7 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 
 ![alt text][image1]
 
-### Pipeline (single images)
+#### 2. Pipeline (single images)
 
 To demonstrate this step, I will describe how I apply the process of creating binary thresholded image. Below is an undistorted test image:
 
@@ -158,28 +158,44 @@ def detect_next(binary_warped, LL, RL):
 ```
 Both functions take similar parameters, warped image to search line on, left and right line objects to maintain current line detection state.
 
-####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+#### 5. Radius of lane curvature and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+The source code for radius of the line curvature and position calculation are located in the fifth code cell of the notebook. Here is the funciton interface for calculation of line curvature radius:
+```
+def calculate_curverad(leftx, rightx, ploty):
+```
+It calculates both radii of left and right line.
 
-####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+The function for calculating the position of the vehicle with respect to the center has the following interface:
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+```
+def line_base_pos(current_fit, ploty):
+```
+
+#### 6. Example image for final result plotted back down onto original image.
+The implementation for generation such immage is located in the 6th code cell of the the notebook.
+Here is the function interface:
+
+```
+def draw_lane(undist, warped, LL, RL, fname=None):
+```
+
+Here is an example of my result on a test image:
 
 ![alt text][image6]
 
 ---
 
-###Pipeline (video)
+### Pipeline (video)
+My video is located in the root of my project directory and is called processed_project_video.mp4.
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
-
-Here's a [link to my video result](./processed_project_video.mp4)
+Here's a [link to my video result.](./processed_project_video.mp4)
 
 ---
 
-###Discussion
+### Discussion
 
 ####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+The overall pipeline consists of 5 main steps, all of the are marked and described above.
