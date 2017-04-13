@@ -42,7 +42,7 @@ Here is a [link](https://github.com/ahubi/CarND-Advanced-Lane-Lines/blob/master/
 |warped_undistorted.jpg|Image showing original test image with source points drawn in red and the same image after applying perspective transform with destination points drawn in red|
 
 
-### Camera Calibration
+### Camera Calibration and undistortion
 
 ####1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
@@ -66,7 +66,8 @@ I then used the output `objpoints` and `imgpoints` to compute the camera calibra
 
 ### Pipeline (single images)
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one undistorted image:
+To demonstrate this step, I will describe how I apply the process of creating binary thresholded image. Below is an undistorted test image:
+
 ![alt text][image2]
 
 #### Create thresholded binary image
@@ -76,24 +77,33 @@ I used a combination of color and gradient thresholds to generate a binary image
 ```
 def pipeline(img, s_thresh=(150, 255), sx_thresh=(20, 200),l_thresh=(50,255)):
 ```
-To achieve better results the images is converted to HLS color space in the first step. After that individual channels L and S are separated. Sobel in x direction is applied to L channel to accentuate vertical lines (lane lines). Sobel result is scaled and thresholded. Additionally thresholding is applied to L and S channels separately. At the end all three results are combined to one images by 'AND' operation.
+To achieve better results the images is converted to HLS color space in the first step. After that individual channels L and S are separated. Sobel in x direction is applied to L channel to accentuate vertical lines (lane lines). Sobel result is scaled and thresholded. Additionally thresholding is applied to L and S channels separately. At the end all three results are combined to one image by 'AND' and 'OR' operation.
 
 ```
 combined_binary[((l_binary == 1) & (s_binary == 1) | (sxbinary==1))] = 1
 ```
 
-Here's an example of the the image shown above for this step.
+Below is an image which was processed by the function pipeline. Compared to the undistorted colored image shown above one can see that most of the information is removed, but the important lane lines are still clearly visible.
 
 ![alt text][image3]
 
-####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+#### 3. Perspective transform
 
-The code for my perspective transform includes a function called `warp()`, which appears in the first code cell of the IPython notebook.  The `warp()` function takes as inputs an image (`img`) and whether the perspective transform should be done from src to dst or in opposit direction. Source (`src`) and destination (`dst`) points are hardcoded in the function.  I chose the hardcode the source and destination points in the following manner:
+The code for my perspective transform includes a function called `warp()`, which appears in the first code cell of the IPython notebook.  The `warp()` function takes as inputs an image (`img`) and whether the perspective transform should be done from src to dst or in opposite direction. It returns a warped image provided as argument 'img'.
+
+```
+def warp(img,src2dst=True):
+```
+
+Source (`src`) and destination (`dst`) points are hardcoded in the function.  I chose to hardcode the source and destination points in the following manner:
 
 ```
 src = np.float32([[585, 460],[203, 720],[1127, 720],[695, 460]])
 dst = np.float32([[320, 0],[320, 720],[960, 720],[960, 0]])
+
 ```
+Remark: Hardcoding should be ok for this porject since the pipeline operates on constant image size.
+
 This resulted in the following source and destination points:
 
 | Source        | Destination   |
@@ -107,11 +117,46 @@ I verified that my perspective transform was working as expected by drawing the 
 
 ![alt text][image4]
 
-####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+#### 4. Identify lane-line pixels and fit their positions with a polynomial
+The source code for detecting lines in the image is located in the fifth notebook cell and is splitted over two functions. The implementation is based on the examples shown during udacity lessons.
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+The first funciton is used to initially find the left and right line on the image.
+
+```
+def detect_start(binary_warped, LL, RL, fname=None):
+```
+
+First a histogram is taken of the bottom half of the image
+
+```
+histogram = np.sum(binary_warped[int(binary_warped.shape[0]/2):,:], axis=0)
+```
+Find the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines
+
+```
+midpoint = np.int(histogram.shape[0]/2)
+leftx_base = np.argmax(histogram[:midpoint])
+rightx_base = np.argmax(histogram[midpoint:]) + midpoint
+
+```
+After that repeat identifying the line pixel positions of the image by sliding in 9 steps to the top of the image.
+
+Fit a second order polynomial to each line, using left and right line pixel's coordinates.
+```
+left_fit = np.polyfit(lefty, leftx, 2)
+right_fit = np.polyfit(righty, rightx, 2)
+```
+
+Plotting line pixels, fitted polynomials and the the 9 steps from bottom to top will result in the following picture:
 
 ![alt text][image5]
+
+
+The second function is used when the lines are identified and searches around last position of the lines identified initially with the first function.
+```
+def detect_next(binary_warped, LL, RL):
+```
+Both functions take similar parameters, warped image to search line on, left and right line objects to maintain current line detection state.
 
 ####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
