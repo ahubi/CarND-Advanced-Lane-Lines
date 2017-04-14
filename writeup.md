@@ -161,10 +161,11 @@ Both functions take similar parameters, warped image to search line on, left and
 #### 5. Radius of lane curvature and vehicle position with respect to center.
 
 The source code for radius of the line curvature and position calculation are located in the fifth ans sixth code cell of the notebook. Here is the funciton interface for calculation of line curvature radius:
+
 ```
 def calculate_curverad(leftx, rightx, ploty):
 ```
-It calculates both radii of left and right line.
+It calculates both radii of left and right line. information of how to calculate curvature radius was provided during udacity lesson according with sample code. My implementation is based on the explanation and sample code provided during the lesson.
 
 The function for calculating the position of each line with respect to the center has the following interface:
 
@@ -210,9 +211,7 @@ Here's a [link to my video result.](./processed_project_video.mp4)
 
 ### Discussion
 
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
-
 The overall pipeline consists of 5 main steps, all of the steps are marked and described above. Trying the pipeline on the challenge video showed that there is room for improvements and optimizations. During testing on the project video I realized that the bridges with tree shadows and different pavement color are bringing the pipeline into troubles to stay in lane. I applied some sanity checks and tweaked the parameters when evaluating the lines. Please refer to Line class functions radius_in_range(), position_in_range() which are evaluating lines and whether they should be accepted.
 
 Some further investigation could be done in finding a better thresholding process to generate more precise binary images.
-Another important area for investigation will be to find out a better line detection algorithm. It might be helpful to calculate radii based on smaller portions of the image. Additionally to that more strict sanity rules could be applied.
+Another important area for investigation will be to find out a better line detection algorithm. It might be helpful to calculate radii based on smaller portions of the image. Additionally to that more strict sanity rules could be applied. The rules sanity check currently available miight be not correct for other challenging conditions, e.g. radius range check might be to strict.
