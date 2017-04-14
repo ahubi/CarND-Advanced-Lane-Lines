@@ -32,7 +32,7 @@ Here is a [link](https://github.com/ahubi/CarND-Advanced-Lane-Lines/blob/master/
 
 | Directory / File name       | Description   |
 |:-------------:|:-------------:|
-| binary_images     | Images after applied threshold and gradient pipeline|
+| binary_images     | Images after applied threshold and gradient step|
 | chessboard_corners      | Images used during camera calibration, detected corners drawn on the image      |
 | transformed_images     | Images after being binarized and perspectively transformed.     |
 | undistorted     | Images after undistortion is applied |
@@ -43,8 +43,6 @@ Here is a [link](https://github.com/ahubi/CarND-Advanced-Lane-Lines/blob/master/
 
 
 #### 1. Camera Calibration and undistortion
-
-####1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
 The code for this step is contained in the first (function implemented) and second (function executed) code cell of the IPython notebook located in "./alf.ipynb" The function calibrate_camera() does the calibration.
 
@@ -72,18 +70,18 @@ To demonstrate this step, I will describe how I apply the process of creating bi
 
 #### Create thresholded binary image
 
-I used a combination of color and gradient thresholds to generate a binary image (the code for creating a thresholded binary image is located in the first code cell of my notebook, function pipeline()) Threshholding ranges are passed into function, following values are used:
+I used a combination of color and gradient thresholds to generate a binary image (the code for creating a thresholded binary image is located in the first code cell of my notebook, function pipeline(). Threshholding ranges are passed into function, following values are used:
 
 ```
 def pipeline(img, s_thresh=(150, 255), sx_thresh=(20, 200),l_thresh=(50,255)):
 ```
-To achieve better results the images is converted to HLS color space in the first step. After that individual channels L and S are separated. Sobel in x direction is applied to L channel to accentuate vertical lines (lane lines). Sobel result is scaled and thresholded. Additionally thresholding is applied to L and S channels separately. At the end all three results are combined to one image by 'AND' and 'OR' operation.
+To achieve better results the image is converted to HLS color space in the first step. After that individual channels L and S are separated. Sobel in x direction is applied to L channel to accentuate vertical lane lines. Sobel result is scaled and thresholded. Additionally thresholding is applied to L and S channels separately. At the end all three results are combined to one binary image by 'AND' and 'OR' operation.
 
 ```
 combined_binary[((l_binary == 1) & (s_binary == 1) | (sxbinary==1))] = 1
 ```
 
-Below is an image which was processed by the function pipeline. Compared to the undistorted colored image shown above one can see that most of the information is removed, but the important lane lines are still clearly visible.
+Below is an image which was processed by the function pipeline(). Compared to the undistorted colored image shown above one can see that most of the information is removed, but the important lane lines are still clearly visible.
 
 ![alt text][image3]
 
@@ -118,7 +116,7 @@ I verified that my perspective transform was working as expected by drawing the 
 ![alt text][image4]
 
 #### 4. Identify lane-line pixels and fit their positions with a polynomial
-The source code for detecting lines in the image is located in the fifth notebook cell and is splitted over two functions. The implementation is based on the examples shown during udacity lessons.
+The source code for detecting lines in the image is located in the fifth notebook cell and is splitted over two functions. The implementation is based on examples shown during udacity lessons.
 
 The first funciton is used to initially find the left and right line on the image.
 
